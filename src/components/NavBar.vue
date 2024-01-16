@@ -6,6 +6,11 @@
         <ul class="navbar-nav ml-auto">
           <router-link v-if="!loggedIn" class="nav-item nav-link" to="/login">Iniciar sesión</router-link>
           <button v-if="loggedIn" @click="logout" class="btn btn-outline-danger">Cerrar sesión</button>
+
+          <router-link v-if="loggedIn" class="nav-item nav-link" to="/nueva-operacion">Nueva Operación</router-link>
+          <router-link v-if="loggedIn" class="nav-item nav-link" to="/historial">Historial</router-link>
+          <router-link v-if="loggedIn" class="nav-item nav-link" to="/analisis-estado">Análisis de Estado</router-link>
+          <router-link v-if="loggedIn" class="nav-item nav-link" to="/analisis-inversiones">Análisis de Inversiones</router-link>
         </ul>
       </div>
     </div>
@@ -27,3 +32,7 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/* Estilos específicos de la barra de navegación aquí */
+</style>
