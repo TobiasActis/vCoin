@@ -5,6 +5,7 @@ import store from "./store";
 import axios from 'axios';
 import Mercado from "./components/Mercado.vue"; // Ajusta la ruta según tu estructura de carpetas
 
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Configura Axios con axios-cors-proxy

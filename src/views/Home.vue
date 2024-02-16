@@ -1,6 +1,6 @@
 <template>
     <div class="container mt-4">
-      <h2>Bienvenido a CryptoExchange</h2>
+      <h2>Mercado Actual</h2>
       <!-- Contenido de la pantalla principal aquí -->
       <Mercados></Mercados>
     </div>

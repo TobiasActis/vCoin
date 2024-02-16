@@ -4,39 +4,44 @@
       <h2 class="mb-4">Iniciar sesión</h2>
       <form @submit.prevent="login">
         <div class="form-group">
-          <label for="alumnoId">ID Alfanumérico:</label>
-          <input type="text" v-model="alumnoId" class="form-control" required>
+          <label for="username">ID Alfanumérico:</label>
+          <input type="text"  class="form-control" v-model="username" required>
         </div>
-        <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+        <button type="button" class="btn btn-primary" @click="validateUser">Iniciar sesión</button>
       </form>
     </div>
   </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+
 export default {
   data() {
     return {
-      alumnoId: "",
+      username: '',
+      error: false,
     };
   },
   methods: {
-    login() {
-      // Validar si el ID del alumno es alfanumérico (puedes ajustar la validación según tus necesidades)
-      if (/^[a-zA-Z0-9]+$/.test(this.alumnoId)) {
-        // Almacenar el ID del alumno en Vuex
-        this.$store.commit('setAlumnoId', this.alumnoId);
-        // Simular lógica de autenticación (puedes ajustar según tus necesidades)
-        this.$store.commit('setLoggedIn', true);
+    ...mapActions(['login']),
+
+    async validateUser() {
+      const usernamePattern = /^[a-zA-Z0-9]{5,15}$/;
+
+      if (this.username && usernamePattern.test(this.username)) {
+        this.error = false;
+        await this.login(this.username);
         this.$router.push('/');
       } else {
-        // Mostrar mensaje de error si el ID no es válido
-        alert("El ID debe ser alfanumérico");
+        this.error = true;
+        this.username = '';
       }
     },
   },
 };
 </script>
+
 
 <style scoped>
 .container {
