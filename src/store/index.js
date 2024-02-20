@@ -1,5 +1,6 @@
 import {createStore } from 'vuex';
 import criptosModulo from './criptos';
+import operacionesModulo from './operaciones';
 
 export default createStore({
  
@@ -44,5 +45,6 @@ export default createStore({
 
   modules: {
     criptos: criptosModulo,
+    operaciones: operacionesModulo
   },
 });

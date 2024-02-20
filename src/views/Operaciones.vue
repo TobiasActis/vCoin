@@ -9,9 +9,9 @@
       <component :is="componenteSeleccionado"/>
       
     </div>
-  </template>
+</template>
   
-  <script>
+<script>
   import CompraCrypto from '../components/CompraCrypto.vue';
   import VentaCrypto from '../components/VentaCrypto.vue';
   
@@ -31,5 +31,5 @@
       VentaCrypto,
     },
   };
-  </script>
+</script>
   

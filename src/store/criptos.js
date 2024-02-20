@@ -24,7 +24,7 @@ const actions = {
   async fetchCryptosPrices({ commit, state }) {
     try {
       for (const criptoCode in state.criptos) {
-        const criptoResponse = await axios.get(`${API_BASE_URL}/binance/${criptoCode}/ars/0.5`);
+        const criptoResponse = await axios.get(`${API_BASE_URL}/binance/${criptoCode}/ars/1`);
         commit('setCripto', { criptoCode, data: criptoResponse.data });
       }
     } catch (error) {

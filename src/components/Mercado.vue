@@ -36,7 +36,7 @@ export default {
       const codeMappings = {
         btc: 'Bitcoin',
         eth: 'Ethereum',
-        usdt: 'USDT Coin',
+        usdt: 'USDT',
       };
       return codeMappings[code] || 'Desconocido';
     },
