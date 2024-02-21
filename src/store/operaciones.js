@@ -42,8 +42,8 @@ const actions = {
       });
 
       commit('updateCriptoAmount', {
-        cryptoCode: transactionData.criptoCode,
-        amount: transactionData.criptoAmount,
+        criptoCode: transactionData.cripto_Code,
+        amount: transactionData.cripto_Amount,
         action: 'purchase',
       });
 
@@ -62,8 +62,8 @@ const actions = {
       });
 
       commit('updateCriptoAmount', {
-        cryptoCode: transactionData.criptoCode,
-        amount: transactionData.criptoAmount,
+        criptoCode: transactionData.cripto_Code,
+        amount: transactionData.cripto_Amount,
         action: 'sell',
       });
 
@@ -75,6 +75,7 @@ const actions = {
 };
 
 export default {
+  namespaced: true,
   state,
   getters,
   mutations,
