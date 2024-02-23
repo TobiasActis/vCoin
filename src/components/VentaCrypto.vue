@@ -1,73 +1,122 @@
 <template>
-    <div>
-      <h2>Realizar Venta</h2>
-      <form @submit.prevent="realizarVenta">
-        <div>
-          <label for="criptomoneda">Criptomoneda:</label>
-          <select v-model="criptomoneda" id="criptomoneda" required>
-            <option value="btc">Bitcoin (BTC)</option>
-            <option value="eth">Ethereum (ETH)</option>
-          </select>
-        </div>
-        <div>
-          <label for="cantidad">Cantidad:</label>
-          <input type="number" v-model="cantidad" id="cantidad" step="0.0001" required>
-        </div>
-        <div>
-          <p>Precio: {{ precio }}</p>
-        </div>
-        <div>
-          <button type="submit">Realizar Venta</button>
-        </div>
-        <div v-if="ventaExitosa">
-          <p>Venta exitosa</p>
-          <p>Fecha y hora: {{ fechaHoraVenta }}</p>
-        </div>
-      </form>
-    </div>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-        criptomoneda: 'btc',
-        cantidad: 0,
-        precio: 0,
-        ventaExitosa: false,
-        fechaHoraVenta: null,
-      };
+  <div class="container">
+    <h2>Realizar Venta</h2>
+    <form @submit.prevent="realizarVenta">
+      <div>
+        <label for="criptomoneda">Criptomoneda:</label>
+        <select class="input" id="criptomoneda" v-model="criptomoneda" required>
+          <option value="btc">BTC</option>
+          <option value="eth">ETH</option>
+          <option value="usdt">USDT</option>
+        </select>
+      </div>
+      <div>
+        <label for="cantidad">Cantidad:</label>
+        <input
+          type="number"
+          v-model="cantidad"
+          id="cantidad"
+          min="0"
+          step="0.0001"
+          required
+        />
+      </div>
+      <div>
+        <p>Precio por unidad: {{ getPrice(criptomoneda).bid }} ARS</p>
+        <p>Cantidad actual: {{ getWallet[criptomoneda] }}</p>
+      </div>
+      <div>
+        <p>Total a recibir: {{ total }}</p>
+      </div>
+      <div>
+        <button type="submit">Realizar Venta</button>
+      </div>
+      <div v-if="ventaExitosa">
+        <p>Venta exitosa</p>
+        <p>Fecha y hora: {{ fechaHoraVenta }}</p>
+      </div>
+    </form>
+  </div>
+</template>
+
+<script>
+import { mapGetters, mapActions } from "vuex";
+
+export default {
+  data() {
+    return {
+      criptomoneda: "",
+      cantidad: 0,
+      precio: 0,
+      total: 0,
+      ventaExitosa: false,
+      fechaHoraVenta: "",
+    };
+  },
+  computed: {
+    ...mapGetters("criptos", ["getCriptos", "getCriptoPrice"]),
+    ...mapGetters(["username"]),
+    ...mapGetters("operaciones", ["getWallet"]),
+    total() {
+      return this.cantidad * this.getPrice(this.criptomoneda).bid;
     },
-    methods: {
-      async realizarVenta() {
-        // Lógica para obtener el precio de la criptomoneda desde la API
-        // Supongamos que la función obtenerPrecioCriptomoneda devuelve el precio
-        this.precio = await this.obtenerPrecioCriptomoneda(this.criptomoneda);
-  
-        // Lógica para realizar la venta y obtener la fecha y hora
-        this.fechaHoraVenta = new Date().toLocaleString();
-        this.ventaExitosa = true;
-  
-        // Aquí podrías realizar la request POST a la API para guardar la venta
-        // utilizando axios o fetch
-      },
-      async obtenerPrecioCriptomoneda(criptomoneda) {
-        // Simulación de obtener el precio desde la API
-        // Aquí deberías realizar la solicitud real a tu API de criptomonedas
-        // Estoy usando una función setTimeout para simular una respuesta asíncrona
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            // Supongamos que la API devuelve un precio aleatorio para la criptomoneda
-            const precioAleatorio = Math.random() * 10000;
-            resolve(precioAleatorio.toFixed(2)); // Redondeamos el precio a 2 decimales
-          }, 1000);
-        });
-      },
+  },
+  methods: {
+    ...mapActions("criptos", ["fetchCryptosPrices"]),
+    ...mapActions("operaciones", ["newSell"]),
+
+    getPrice(criptoCode) {
+      return this.getCriptoPrice(criptoCode) || 0; // Handle missing prices
     },
-  };
-  </script>
+
+    async realizarVenta() {
+      if (
+        this.cantidad > 0 &&
+        this.criptomoneda &&
+        this.cantidad <= this.getWallet[this.criptomoneda] &&
+        this.getWallet[this.criptomoneda] > 0
+      ) {
+        const datosVenta = {
+          user: this.username,
+          action: "sell",
+          criptoCode: this.criptomoneda,
+          criptoAmount: this.cantidad,
+          datetime: new Date(),
+        };
+
+        try {
+          await this.newSell(datosVenta);
+          this.ventaExitosa = true;
+          this.fechaHoraVenta = datosVenta.datetime.toLocaleString();
+          this.cantidad = 0;
+          this.total = 0;
+        } catch (error) {
+          console.error("Error al realizar la venta", error);
+        }
+      } else {
+        console.error(
+          "No posees la criptomoneda seleccionada o no tienes saldo suficiente para realizar la venta."
+        );
+      }
+    },
+  },
+  watch: {
+    criptomoneda() {
+      this.precio = this.getPrice(criptomoneda).bid; // Use precio "bid"
+      this.total = this.precio * this.cantidad;
+    },
+    cantidad() {
+      this.total = this.precio * this.cantidad;
+    },
+  },
+  created() {
+    this.fetchCryptosPrices();
+  },
+};
+</script>
+
   
-  <style scoped>
+<style scoped>
   /* Estilos específicos del componente de Venta aquí */
-  </style>
+</style>
   

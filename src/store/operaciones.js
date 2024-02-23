@@ -7,7 +7,8 @@ const apiClient = axios.create({
 });
 
 const state = {
-  wallet: {},
+  wallet: {
+  },
 };
 
 const getters = {

@@ -55,7 +55,7 @@ export default {
   computed: {
     ...mapGetters("criptos", ["getCriptos", "getCriptoPrice"]),
     ...mapGetters(["username"]),
-    ...mapGetters(["wallet", "getWallet"]),
+    ...mapGetters("operaciones", ["getWallet"]),
     total() {
       return this.cantidad * this.getPrice(this.criptomoneda).bid;
     },
@@ -117,11 +117,5 @@ export default {
 </script>
 
 <style scoped>
-/* Agrega estilos personalizados para el componente */
-.container {
-  /* ... */
-}
-.form-container {
-  /* ... */
-}
+
 </style>
