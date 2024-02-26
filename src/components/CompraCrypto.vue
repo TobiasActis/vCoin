@@ -19,7 +19,7 @@
           min="0"
           step="0.0001"
           required
-        >
+        />
       </div>
       <div>
         <p>Precio por unidad: {{ getPrice(criptomoneda).bid }} ARS</p>
@@ -33,6 +33,9 @@
       <div v-if="compraExitosa">
         <p>Compra exitosa</p>
         <p>Fecha y hora: {{ fechaHoraCompra }}</p>
+      </div>
+      <div v-if="errorCompra">
+        <p>{{ mensajeError }}</p>
       </div>
     </form>
   </div>
@@ -50,14 +53,18 @@ export default {
       total: 0,
       compraExitosa: false,
       fechaHoraCompra: "",
+      errorCompra: false,
+      mensajeError: "",
     };
   },
   computed: {
     ...mapGetters("criptos", ["getCriptos", "getCriptoPrice"]),
-    ...mapGetters(["username"]),
     ...mapGetters("operaciones", ["getWallet"]),
+    username() {
+      return this.$store.getters.getUsername;
+    },
     total() {
-      return this.cantidad * this.getPrice(this.criptomoneda).bid;
+      return this.precio * this.cantidad;
     },
   },
   methods: {
@@ -65,45 +72,62 @@ export default {
     ...mapActions("operaciones", ["newPurchase"]),
 
     getPrice(criptoCode) {
-      return this.getCriptoPrice(criptoCode) || 0; // Handle missing prices
+      return this.getCriptoPrice(criptoCode) || { bid: 0 }; 
     },
 
     async realizarCompra() {
-      if (this.cantidad > 0 && this.criptomoneda && this.total <= this.getWallet[this.criptomoneda]) {
+      if (this.cantidad <= 0 || !this.criptomoneda) {
+        this.mostrarError("Cantidad o criptomoneda inválidas");
+        return;
+      }
+
+      if (this.total > this.getWallet[this.criptomoneda]) {
+        this.mostrarError("Saldo insuficiente para realizar la compra");
+        return;
+      }
+
+      if (!this.username) {
+        console.error("Información del usuario no disponible. Inicie sesión antes de realizar una compra.");
+        return;
+      }
+
+      try {
         const datosCompra = {
-          user: this.username,
+          user_id: this.username, 
           action: "purchase",
-          criptoCode: this.criptomoneda,
-          criptoAmount: this.cantidad,
+          crypto_code: this.criptomoneda,
+          crypto_amount: this.cantidad,
+          money: this.total, 
           datetime: new Date(),
         };
 
-        // Validar saldo disponible antes de la compra
-        if (this.wallet[datosCompra.criptoCode] < datosCompra.criptoAmount) {
-          console.error(
-            "Saldo insuficiente para realizar la compra",
-            `Saldo disponible: ${this.wallet[datosCompra.criptoCode]} ${datosCompra.criptoCode}`
-          );
-          return; // Evitar la compra si no hay saldo
+        await this.newPurchase(datosCompra);
+        this.compraExitosa = true;
+        this.fechaHoraCompra = datosCompra.datetime.toLocaleString();
+        this.cantidad = 0;
+        this.total = 0;
+      } catch (error) {
+        console.error("Error al realizar la compra", error);
+        if (error.response && error.response.status === 400) {
+          const errorMessage = error.response.data.message || "Error al realizar la compra. Intente nuevamente más tarde.";
+          this.mostrarError(errorMessage);
         }
-
-        try {
-          await this.newPurchase(datosCompra);
-          this.compraExitosa = true;
-          this.fechaHoraCompra = datosCompra.datetime.toLocaleString();
-          this.cantidad = 0;
-          this.total = 0;
-        } catch (error) {
-          console.error("Error al realizar la compra", error);
-        }
-      } else {
-        console.error("Cantidad o criptomoneda inválidas, o saldo insuficiente");
       }
     },
+
+    mostrarError(mensaje) {
+      this.errorCompra = true;
+      this.mensajeError = mensaje;
+      setTimeout(() => {
+        this.errorCompra = false;
+        this.mensajeError = "";
+      }, 5000);
+    }
   },
+
   watch: {
     criptomoneda() {
-      this.precio = this.getPrice(criptomoneda).bid; // Use precio "bid"
+      this.precio = this.getPrice(this.criptomoneda).bid; // Use precio "bid"
       this.total = this.precio * this.cantidad;
     },
     cantidad() {
