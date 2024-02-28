@@ -55,8 +55,10 @@ export default {
   },
   computed: {
     ...mapGetters("criptos", ["getCriptos", "getCriptoPrice"]),
-    ...mapGetters(["username"]),
     ...mapGetters("operaciones", ["getWallet"]),
+    username() {
+      return this.$store.getters.getUsername;
+    },
     total() {
       return this.cantidad * this.getPrice(this.criptomoneda).bid;
     },
@@ -77,10 +79,11 @@ export default {
         this.getWallet[this.criptomoneda] > 0
       ) {
         const datosVenta = {
-          user: this.username,
+          user_id: this.username,
           action: "sell",
-          criptoCode: this.criptomoneda,
-          criptoAmount: this.cantidad,
+          cripto_code: this.criptomoneda,
+          cripto_amount: this.cantidad,
+          money: this.total,
           datetime: new Date(),
         };
 

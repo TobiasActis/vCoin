@@ -1,74 +1,79 @@
 <template>
-    <div>
-      <h2>Historial de Movimientos</h2>
-      <div v-if="movimientos.length === 0">
-        <p>No hay movimientos registrados.</p>
-      </div>
-      <div v-else>
-        <div v-for="movimiento in movimientos" :key="movimiento._id" class="movimiento-item">
-          <p>Criptomoneda: {{ movimiento.crypto_code }}</p>
-          <p>Cantidad: {{ movimiento.crypto_amount }}</p>
-          <p>Monto: {{ movimiento.money }}</p>
-          <p>Tipo de movimiento: {{ movimiento.action }}</p>
-          <p>Fecha y Hora: {{ formatearFechaHora(movimiento.datetime) }}</p>
-          <router-link :to="{ name: 'DetalleMovimiento', params: { id: movimiento._id }}">Detalles</router-link>
-          <button @click="editarMovimiento(movimiento._id)">Editar</button>
-          <button @click="borrarMovimiento(movimiento._id)">Borrar</button>
-        </div>
-      </div>
+  <div class="container">
+    <h2>Historial de Movimientos</h2>
+    <div v-if="transactions.length > 0">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Criptomoneda</th>
+            <th>Cantidad</th>
+            <th>Monto</th>
+            <th>Fecha y Hora</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="transaction in transactions" :key="transaction._id">
+            <td>{{ transaction.crypto_code }}</td>
+            <td>{{ transaction.crypto_amount }}</td>
+            <td>{{ transaction.money }} ARS</td>
+            <td>{{ formatDateTime(transaction.datetime) }}</td>
+            <td>
+              <router-link :to="{ name: 'EditarMovimiento', params: { id: transaction._id }}">Editar</router-link>
+              <button @click="deleteTransaction(transaction._id)">Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-        movimientos: [],
-      };
+    <div v-else-if="isLoading">
+      <p>Cargando transacciones...</p>
+    </div>
+    <div v-else>
+      <p>No hay movimientos para mostrar</p>
+    </div>
+  </div>
+</template>
+
+<script>
+import { mapActions, mapGetters } from 'vuex';
+
+export default {
+  name: 'HistorialMovimientos',
+  data() {
+    return {
+      isLoading: false,
+    };
+  },
+  computed: {
+    ...mapGetters('operaciones', ['transactions']),
+  },
+  methods: {
+    ...mapActions('operaciones', ['fetchTransactions', 'deleteTransaction']),
+
+    formatDateTime(value) {
+      return new Date(value).toLocaleString('es-ES');
     },
-    created() {
-      this.obtenerMovimientos();
+
+    async deleteTransaction(id) {
+      if (confirm('¿Estás seguro de eliminar la transacción?')) {
+        await this.deleteTransaction(id);
+      }
     },
-    methods: {
-      async obtenerMovimientos() {
-        // Lógica para obtener movimientos desde la API
-        // Utiliza axios o fetch para hacer la solicitud GET
-        const userId = this.$store.getters.getAlumnoId; // Obtén el ID del usuario desde Vuex
-        try {
-          const response = await axios.get(`https://laboratorio3-f36a.restdb.io/rest/transactions?q={"user_id": "${userId}"}`);
-          this.movimientos = response.data;
-        } catch (error) {
-          console.error('Error al obtener movimientos:', error);
-        }
-      },
-      formatearFechaHora(fechaHora) {
-        // Lógica para formatear la fecha y hora según tus necesidades
-        // Puedes utilizar bibliotecas como moment.js si lo prefieres
-        const fecha = new Date(fechaHora);
-        return fecha.toLocaleString();
-      },
-      editarMovimiento(idMovimiento) {
-        // Lógica para redirigir a la página de edición con el ID del movimiento
-        this.$router.push({ name: 'EditarMovimiento', params: { id: idMovimiento } });
-      },
-      borrarMovimiento(idMovimiento) {
-        // Lógica para borrar el movimiento desde la API
-        // Utiliza axios o fetch para hacer la solicitud DELETE
-        if (confirm('¿Estás seguro de que deseas borrar este movimiento?')) {
-          // Realiza la solicitud DELETE y luego actualiza la lista de movimientos
-          // Puedes implementar esta lógica según tus necesidades
-        }
-      },
+
+    async fetchTransactions() {
+      this.isLoading = true;
+      await this.fetchTransactions();
+      this.isLoading = false;
     },
-  };
-  </script>
-  
-  <style scoped>
-  /* Estilos específicos del componente de HistorialMovimientos aquí */
-  .movimiento-item {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 10px;
-  }
-  </style>
-  
+  },
+
+  created() {
+    this.fetchTransactions();
+  },
+};
+</script>
+
+<style scoped>
+  /* Estilos específicos del componente HistorialMovimientos */
+</style>

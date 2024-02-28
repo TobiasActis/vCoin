@@ -34,17 +34,17 @@ const mutations = {
 };
 
 const actions = {
-  async newPurchase({ commit }, transactionData) {
+  async newPurchase({ commit }, datosCompra) {
     try {
-      console.log('Compra:', transactionData);
+      console.log('Compra:', datosCompra);
       const response = await apiClient.post('', {
-        ...transactionData,
+        ...datosCompra,
         action: 'purchase',
       });
 
       commit('updateCriptoAmount', {
-        criptoCode: transactionData.cripto_Code,
-        amount: transactionData.cripto_Amount,
+        criptoCode: datosCompra.crypto_code,
+        amount: datosCompra.crypto_amount,
         action: 'purchase',
       });
 
@@ -54,17 +54,17 @@ const actions = {
     }
   },
 
-  async newSell({ commit }, transactionData) {
+  async newSell({ commit }, datosCompra) {
     try {
-      console.log('Venta:', transactionData);
+      console.log('Venta:', datosCompra);
       const response = await apiClient.post('', {
-        ...transactionData,
+        ...datosCompra,
         action: 'sell',
       });
 
       commit('updateCriptoAmount', {
-        criptoCode: transactionData.cripto_Code,
-        amount: transactionData.cripto_Amount,
+        criptoCode: datosCompra.crypto_code,
+        amount: datosCompra.crypto_amount,
         action: 'sell',
       });
 

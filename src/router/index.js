@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Home from '@/views/Home.vue';
 import Login from '@/views/Login.vue';
 import Operaciones from '@/views/Operaciones.vue';
-// import Historial from '@/views/Historial.vue'
+import Historial from '@/views/Historial.vue';
 import store from '@/store';  
 
 
@@ -23,11 +23,11 @@ const routes = [
     name: 'Operaciones',
     component: Operaciones, 
   },
-  // {
-  //   path: '/historial',
-  //   name: 'Historial',
-  //   component: Historial, 
-  // },
+  {
+    path: '/historial',
+    name: 'Historial',
+    component: Historial, 
+  },
 ];
 
 const router = createRouter({

@@ -94,10 +94,10 @@ export default {
       try {
         const datosCompra = {
           user_id: this.username, 
-          action: "purchase",
+          action: 'purchase',
           crypto_code: this.criptomoneda,
           crypto_amount: this.cantidad,
-          money: this.total, 
+          money: this.total.toFixed(2), 
           datetime: new Date(),
         };
 
