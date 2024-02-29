@@ -54,18 +54,18 @@ const actions = {
     }
   },
 
-  async newSell({ commit }, datosCompra) {
+  async newSell({ commit }, datosVenta) {
     try {
-      console.log('Venta:', datosCompra);
+      console.log('Venta:', datosVenta);
       const response = await apiClient.post('', {
-        ...datosCompra,
-        action: 'sell',
+        ...datosVenta,
+        action: 'sale',
       });
 
       commit('updateCriptoAmount', {
-        criptoCode: datosCompra.crypto_code,
-        amount: datosCompra.crypto_amount,
-        action: 'sell',
+        criptoCode: datosVenta.crypto_code,
+        amount: datosVenta.crypto_amount,
+        action: 'sale',
       });
 
       return response.data;

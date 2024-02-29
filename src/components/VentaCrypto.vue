@@ -47,8 +47,6 @@ export default {
     return {
       criptomoneda: "",
       cantidad: 0,
-      precio: 0,
-      total: 0,
       ventaExitosa: false,
       fechaHoraVenta: "",
     };
@@ -68,7 +66,7 @@ export default {
     ...mapActions("operaciones", ["newSell"]),
 
     getPrice(criptoCode) {
-      return this.getCriptoPrice(criptoCode) || 0; // Handle missing prices
+      return this.getCriptoPrice(criptoCode) || { bid: 0 };
     },
 
     async realizarVenta() {
@@ -80,10 +78,10 @@ export default {
       ) {
         const datosVenta = {
           user_id: this.username,
-          action: "sell",
-          cripto_code: this.criptomoneda,
-          cripto_amount: this.cantidad,
-          money: this.total,
+          action: "sale",
+          crypto_code: this.criptomoneda,
+          crypto_amount: this.cantidad,
+          money: this.total.toFixed(2),
           datetime: new Date(),
         };
 
@@ -92,7 +90,6 @@ export default {
           this.ventaExitosa = true;
           this.fechaHoraVenta = datosVenta.datetime.toLocaleString();
           this.cantidad = 0;
-          this.total = 0;
         } catch (error) {
           console.error("Error al realizar la venta", error);
         }
@@ -105,11 +102,7 @@ export default {
   },
   watch: {
     criptomoneda() {
-      this.precio = this.getPrice(criptomoneda).bid; // Use precio "bid"
-      this.total = this.precio * this.cantidad;
-    },
-    cantidad() {
-      this.total = this.precio * this.cantidad;
+      this.cantidad = 0; 
     },
   },
   created() {
@@ -118,8 +111,6 @@ export default {
 };
 </script>
 
-  
 <style scoped>
-  /* Estilos específicos del componente de Venta aquí */
+/* Estilos específicos del componente de Venta aquí */
 </style>
-  
