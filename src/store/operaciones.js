@@ -7,12 +7,13 @@ const apiClient = axios.create({
 });
 
 const state = {
-  wallet: {
-  },
+  wallet: {},
+  transactionHistory: [],
 };
 
 const getters = {
-  getWallet: (state) => state.wallet,
+  getWallet: state => state.wallet,
+  getTransactionHistory: state => state.transactionHistory,
 };
 
 const mutations = {
@@ -30,7 +31,24 @@ const mutations = {
 
   setWallet(state, newWallet) {
     state.wallet = { ...newWallet };
-  }
+  },
+
+  setTransactionHistory(state, transactionHistory) {
+    state.transactionHistory = transactionHistory;
+  },
+  
+  removeTransaction(state, transactionId) {
+    state.transactionHistory = state.transactionHistory.filter(transaction => transaction._id !== transactionId);
+  },
+
+  updateTransaction(state, updatedTransaction) {
+    state.transactionHistory = state.transactionHistory.map(transaction => {
+      if (transaction._id === updatedTransaction._id) {
+        return updatedTransaction;
+      }
+      return transaction;
+    });
+  },
 };
 
 const actions = {
@@ -71,6 +89,40 @@ const actions = {
       return response.data;
     } catch (error) {
       console.error('Error al crear la venta:', error);
+    }
+  },
+
+  async fetchTransactionHistory({ commit }, username) {
+    try {
+      const response = await apiClient.get('', {
+        params: {
+          q: JSON.stringify({ "user_id": username })
+        }
+      });
+      commit('setTransactionHistory', response.data);
+    } catch (error) {
+      console.error('Error al obtener el historial de transacciones:', error);
+      throw error;
+    }
+  },
+
+  async deleteTransaction({ commit }, transactionId) {
+    try {
+      await apiClient.delete(`/${transactionId}`);
+      commit('removeTransaction', transactionId);
+    } catch (error) {
+      console.error('Error al borrar la transacción:', error);
+      throw error;
+    }
+  },
+
+  async updateTransaction({ commit }, updatedTransaction) {
+    try {
+      await apiClient.put(`/${updatedTransaction._id}`, updatedTransaction);
+      commit('updateTransaction', updatedTransaction);
+    } catch (error) {
+      console.error('Error al actualizar la transacción:', error);
+      throw error;
     }
   },
 };
