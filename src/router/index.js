@@ -3,6 +3,8 @@ import Home from '@/views/Home.vue';
 import Login from '@/views/Login.vue';
 import Operaciones from '@/views/Operaciones.vue';
 import Historial from '@/views/Historial.vue';
+import EstadoActual from '@/views/EstadoActual';
+import Inversiones from '@/views/Inversiones'
 import store from '@/store';  
 
 
@@ -27,6 +29,16 @@ const routes = [
     path: '/historial',
     name: 'Historial',
     component: Historial, 
+  },
+  {
+    path: '/estadoActual',
+    name: 'Estado Actual',
+    component: EstadoActual, 
+  },
+  {
+    path: '/inversiones',
+    name: 'Inversiones',
+    component: Inversiones, 
   },
 ];
 

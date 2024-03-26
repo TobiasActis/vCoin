@@ -7,8 +7,8 @@
           <router-link v-if="!loggedIn" class="nav-item nav-link" to="/login">Iniciar sesión</router-link>
           <router-link v-if="loggedIn" class="nav-item nav-link" to="/operaciones">Nueva Operación</router-link>
           <router-link v-if="loggedIn" class="nav-item nav-link" to="/historial">Historial</router-link>
-          <router-link v-if="loggedIn" class="nav-item nav-link" to="/analisis-estado">Análisis de Estado</router-link>
-          <router-link v-if="loggedIn" class="nav-item nav-link" to="/analisis-inversiones">Análisis de Inversiones</router-link>
+          <router-link v-if="loggedIn" class="nav-item nav-link" to="/estadoActual">Análisis de Estado</router-link>
+          <router-link v-if="loggedIn" class="nav-item nav-link" to="/inversiones">Análisis de Inversiones</router-link>
         </ul>
         <button v-if="loggedIn" @click="clicklogout" class="btn btn-outline-danger">Cerrar sesión</button>
       </div>
