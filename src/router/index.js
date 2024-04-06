@@ -5,7 +5,7 @@ import Operaciones from '@/views/Operaciones.vue';
 import Historial from '@/views/Historial.vue';
 import EstadoActual from '@/views/EstadoActual';
 import Inversiones from '@/views/Inversiones'
-import store from '@/store';  
+import store from '@/store';
 
 
 const routes = [
@@ -23,22 +23,22 @@ const routes = [
   {
     path: '/operaciones',
     name: 'Operaciones',
-    component: Operaciones, 
+    component: Operaciones,
   },
   {
     path: '/historial',
     name: 'Historial',
-    component: Historial, 
+    component: Historial,
   },
   {
     path: '/estadoActual',
     name: 'Estado Actual',
-    component: EstadoActual, 
+    component: EstadoActual,
   },
   {
     path: '/inversiones',
     name: 'Inversiones',
-    component: Inversiones, 
+    component: Inversiones,
   },
 ];
 
@@ -50,10 +50,10 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth) && !store.state.loggedIn) {
     next('/login');
-  } else if(to.meta.requiresGuest && store.state.loggedIn){
+  } else if (to.meta.requiresGuest && store.state.loggedIn) {
     next('/#');
   }
-  else{
+  else {
     next();
   }
 });

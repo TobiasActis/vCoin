@@ -12,29 +12,22 @@
       </div>
       <div>
         <label for="cantidad">Cantidad:</label>
-        <input
-          type="number"
-          v-model="cantidad"
-          id="cantidad"
-          min="0"
-          step="0.0001"
-          required
-        />
+        <input type="number" v-model="cantidad" id="cantidad" min="0" step="0.0001" required class="input" />
       </div>
       <div>
-        <p>Precio por unidad: {{ getPrice(criptomoneda).bid }} ARS</p>
+        <p>Precio por unidad: {{ formatPrice(getPrice(criptomoneda).bid) }}</p>
       </div>
       <div>
-        <p>Total a pagar: {{ total }}</p>
+        <p>Total a pagar: {{ formatPrice(total) }}</p>
       </div>
       <div>
         <button type="submit">Realizar Compra</button>
       </div>
-      <div v-if="compraExitosa">
+      <div class="success-message" v-if="compraExitosa">
         <p>Compra exitosa</p>
         <p>Fecha y hora: {{ fechaHoraCompra }}</p>
       </div>
-      <div v-if="errorCompra">
+      <div class="error-message" v-if="errorCompra">
         <p>{{ mensajeError }}</p>
       </div>
     </form>
@@ -72,7 +65,13 @@ export default {
     ...mapActions("operaciones", ["newPurchase"]),
 
     getPrice(criptoCode) {
-      return this.getCriptoPrice(criptoCode) || { bid: 0 }; 
+      return this.getCriptoPrice(criptoCode) || { bid: 0 };
+    },
+
+    formatPrice(price) {
+      if (!price) return '-';
+      const formattedPrice = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(price);
+      return formattedPrice;
     },
 
     async realizarCompra() {
@@ -93,11 +92,11 @@ export default {
 
       try {
         const datosCompra = {
-          user_id: this.username, 
+          user_id: this.username,
           action: 'purchase',
           crypto_code: this.criptomoneda,
           crypto_amount: this.cantidad,
-          money: this.total.toFixed(2), 
+          money: this.total.toFixed(2),
           datetime: new Date(),
         };
 
@@ -127,7 +126,7 @@ export default {
 
   watch: {
     criptomoneda() {
-      this.precio = this.getPrice(this.criptomoneda).bid; // Use precio "bid"
+      this.precio = this.getPrice(this.criptomoneda).bid;
       this.total = this.precio * this.cantidad;
     },
     cantidad() {
@@ -141,5 +140,80 @@ export default {
 </script>
 
 <style scoped>
+.container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #222;
+  border-radius: 8px;
+  box-shadow: 0 0 10px #f0bb0b18;
+}
 
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #fff;
+
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+label {
+  font-weight: bold;
+  color: #fff;
+
+}
+
+.input {
+  width: 100%;
+  padding: 10px;
+  background-color: #333333;
+  color: #fff;
+  border: 1px solid #888;
+  border-radius: 5px;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #F0B90B;
+  box-shadow: 0 0 5px #F0B90B;
+
+}
+
+p {
+  margin: 0;
+  color: #fff;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #F0B90B;
+  color: #222;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #FFD749;
+}
+
+.success-message,
+.error-message {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.success-message {
+  background-color: #38e260;
+}
+
+.error-message {
+  background-color: #ff3f4f;
+}
 </style>

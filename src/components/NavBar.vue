@@ -1,14 +1,24 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
       <router-link class="navbar-brand" to="/">VCoin</router-link>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto">
-          <router-link v-if="!loggedIn" class="nav-item nav-link" to="/login">Iniciar sesión</router-link>
-          <router-link v-if="loggedIn" class="nav-item nav-link" to="/operaciones">Nueva Operación</router-link>
-          <router-link v-if="loggedIn" class="nav-item nav-link" to="/historial">Historial</router-link>
-          <router-link v-if="loggedIn" class="nav-item nav-link" to="/estadoActual">Análisis de Estado</router-link>
-          <router-link v-if="loggedIn" class="nav-item nav-link" to="/inversiones">Análisis de Inversiones</router-link>
+          <li v-if="!loggedIn" class="nav-item">
+            <router-link class="nav-link" to="/login">Iniciar sesión</router-link>
+          </li>
+          <li v-if="loggedIn" class="nav-item">
+            <router-link class="nav-link" to="/operaciones">Nueva Operación</router-link>
+          </li>
+          <li v-if="loggedIn" class="nav-item">
+            <router-link class="nav-link" to="/historial">Historial</router-link>
+          </li>
+          <li v-if="loggedIn" class="nav-item">
+            <router-link class="nav-link" to="/estadoActual">Análisis de Estado</router-link>
+          </li>
+          <li v-if="loggedIn" class="nav-item">
+            <router-link class="nav-link" to="/inversiones">Análisis de Inversiones</router-link>
+          </li>
         </ul>
         <button v-if="loggedIn" @click="clicklogout" class="btn btn-outline-danger">Cerrar sesión</button>
       </div>
@@ -26,7 +36,7 @@ export default {
   },
   methods: {
     ...mapActions(['logout']),
-    
+
     async clicklogout() {
       await this.logout();
       this.$router.push('/#');
@@ -36,5 +46,15 @@ export default {
 </script>
 
 <style scoped>
-/* Estilos específicos de la barra de navegación aquí */
+.navbar-brand:hover {
+  color: #ffc107 !important;
+}
+
+.navbar-nav .nav-item .nav-link {
+  color: #ffffff !important;
+}
+
+.navbar-nav .nav-item .nav-link:hover {
+  color: #ffc107 !important;
+}
 </style>

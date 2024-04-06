@@ -5,10 +5,11 @@
       <p>Cargando...</p>
     </div>
     <div v-else>
-      <div v-for="(resultado, criptomoneda) in resultados" :key="criptomoneda">
-        <h3>{{ criptomoneda }}</h3>
-        <p>Resultado: $ {{ resultado }}</p>
-        <hr>
+      <div v-for="(resultado, criptomoneda) in resultados" :key="criptomoneda" class="investment-info">
+        <h3 style="color: #f0b90b;">{{ criptomoneda }}</h3>
+        <p>Resultado: <span :style="{ color: resultado >= 0 ? '#38e260' : '#ff3f4f' }">{{ formatPrice(resultado) }}
+            ARS</span></p>
+        <hr class="divider">
       </div>
     </div>
   </div>
@@ -26,11 +27,17 @@ export default {
   methods: {
     ...mapActions("operaciones", ["fetchTransactionHistory"]),
     ...mapActions("criptos", ["fetchCryptosPrices"]),
+
+    formatPrice(price) {
+      if (!price) return '-';
+      const formattedPrice = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(price);
+      return formattedPrice;
+    },
   },
   computed: {
     ...mapState("operaciones", ["transactionHistory"]),
     ...mapGetters("operaciones", ["getWallet"]),
-    ...mapGetters("criptos", ["getCriptoPrice"]), // Importante agregar esta línea
+    ...mapGetters("criptos", ["getCriptoPrice"]),
     resultados() {
       const resultados = {};
       for (const transaccion of this.transactionHistory) {
@@ -50,7 +57,7 @@ export default {
   async created() {
     try {
       await this.fetchTransactionHistory(this.$store.getters.getUsername);
-      await this.fetchCryptosPrices(); // Llama al método para cargar los precios de las criptomonedas
+      await this.fetchCryptosPrices();
       this.cargando = false;
     } catch (error) {
       console.error('Error:', error);
@@ -60,5 +67,30 @@ export default {
 </script>
 
 <style scoped>
-/* Estilos específicos del componente de Análisis de Inversiones aquí */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #222;
+  border-radius: 8px;
+  box-shadow: 0 0 10px #f0bb0b38;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.investment-info {
+  margin-bottom: 20px;
+}
+
+.divider {
+  border-color: #555;
+}
+
+p {
+  color: #fff;
+}
 </style>

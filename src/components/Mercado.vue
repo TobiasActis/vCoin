@@ -4,11 +4,11 @@
       <div class="crypto-info">
         <h5 class="crypto-name">{{ getCodeName(code) }}</h5>
         <div class="price-details">
-          <p class="price-label">Compra (ars):$<span>{{ formatPrice(crypto?.totalAsk) }}</span></p>
-          <p class="price-label">Venta (ars):$<span>{{ formatPrice(crypto?.totalBid) }}</span></p>
+          <p class="price-label">Compra (ARS):<br/> $ <span class="price-value">{{ formatPrice(crypto?.totalAsk) }}</span></p>
+          <p class="price-label">Venta (ARS):<br/> $ <span class="price-value">{{ formatPrice(crypto?.totalBid) }}</span></p>
           <p class="last-update">
             Última actualización:
-            <span>{{ formatDate(crypto?.time * 1000) }} h</span>
+            <span class="update-time">{{ formatDate(crypto?.time * 1000) }} h</span>
           </p>
         </div>
       </div>
@@ -42,7 +42,7 @@ export default {
     },
     formatPrice(price) {
       if (!price) return '-';
-      return parseFloat(price).toFixed(2);
+      return parseFloat(price).toLocaleString('es-AR', { minimumFractionDigits: 2 });
     },
     formatDate(timestamp) {
       if (!timestamp) return '-';
@@ -67,7 +67,7 @@ export default {
 }
 
 .crypto-card {
-  background-color: #fff;
+  background-color: #222; 
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
@@ -82,6 +82,7 @@ export default {
 
 .crypto-name {
   font-size: 18px;
+  color: #fff; 
   margin-bottom: 5px;
 }
 
@@ -94,11 +95,20 @@ export default {
 .price-label {
   font-size: 16px;
   margin: 0;
+  color: #fff; 
+}
+
+.price-value {
+  color: #F0B90B; 
 }
 
 .last-update {
   font-size: 14px;
   color: #888;
   margin-top: 5px;
+}
+
+.update-time {
+  color: #F0B90B; 
 }
 </style>

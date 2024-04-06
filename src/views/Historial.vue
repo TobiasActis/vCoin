@@ -1,7 +1,6 @@
 <template>
   <div class="container">
     <h2>Historial de Movimientos</h2>
-    <!-- Contenido del historial aquí... -->
     <div v-if="cargando">
       <p>Cargando historial...</p>
     </div>
@@ -9,7 +8,7 @@
       <p>No hay movimientos registrados.</p>
     </div>
     <div v-else>
-      <table class="table">
+      <table class="dark-table">
         <thead>
           <tr>
             <th>Fecha y Hora</th>
@@ -22,38 +21,43 @@
         </thead>
         <tbody>
           <tr v-for="movimiento in transactionHistory" :key="movimiento._id">
-            <td>{{ movimiento.datetime }}</td>
+            <td>{{ formatDateTime(movimiento.datetime) }}</td>
             <td>{{ movimiento.action === 'purchase' ? 'Compra' : 'Venta' }}</td>
             <td>{{ movimiento.crypto_code }}</td>
             <td>{{ movimiento.crypto_amount }}</td>
-            <td>{{ movimiento.money }} ARS</td>
+            <td>{{ formatPrice(movimiento.money) }} <br /> ARS</td>
             <td>
-              <button @click="editarMovimiento(movimiento)">Editar</button>
-              <button @click="borrarMovimiento(movimiento._id)">Borrar</button>
+              <button @click="editarMovimiento(movimiento)" class="edit-button">
+                <i class="bi bi-pencil-fill"></i>
+                <span class="button-label">Editar</span>
+              </button>
+              <button @click="borrarMovimiento(movimiento._id)" class="delete-button">
+                <i class="bi bi-trash-fill"></i>
+                <span class="button-label">Borrar</span>
+              </button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-    <!-- Formulario de edición -->
-    <div v-if="mostrandoFormularioEdicion">
+    <div v-if="mostrandoFormularioEdicion" class="edit-form">
       <h3>Editar Movimiento</h3>
-      <form @submit.prevent="guardarCambios">
+      <form @submit.prevent="guardarCambios" class="dark-form">
         <label>Fecha y Hora:</label>
-        <input type="datetime-local" v-model="movimientoEditado.datetime" required>
+        <input type="datetime-local" v-model="movimientoEditado.datetime" required class="input">
         <label>Acción:</label>
-        <select v-model="movimientoEditado.action" required>
+        <select v-model="movimientoEditado.action" required class="input">
           <option value="purchase">Compra</option>
           <option value="sale">Venta</option>
         </select>
         <label>Criptomoneda:</label>
-        <input type="text" v-model="movimientoEditado.crypto_code" required>
+        <input type="text" v-model="movimientoEditado.crypto_code" required class="input">
         <label>Cantidad:</label>
-        <input type="number" v-model="movimientoEditado.crypto_amount" required>
+        <input type="number" v-model="movimientoEditado.crypto_amount" required class="input">
         <label>Monto:</label>
-        <input type="number" v-model="movimientoEditado.money" required>
-        <button type="submit">Guardar Cambios</button>
-        <button @click="cancelarEdicion">Cancelar</button>
+        <input type="number" v-model="movimientoEditado.money" required class="input">
+        <button type="submit" class="submit-button">Guardar Cambios</button>
+        <button @click="cancelarEdicion" class="cancel-button">Cancelar</button>
       </form>
     </div>
   </div>
@@ -61,6 +65,7 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
+import { format } from 'date-fns';
 
 export default {
   data() {
@@ -88,7 +93,6 @@ export default {
         console.log("Usuario no logueado. No se puede obtener el historial.");
         return;
       }
-
       this.cargando = true;
       try {
         await this.fetchTransactionHistory(username);
@@ -97,6 +101,11 @@ export default {
       } finally {
         this.cargando = false;
       }
+    },
+    formatPrice(price) {
+      if (!price) return '-';
+      const formattedPrice = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(price);
+      return formattedPrice;
     },
     async borrarMovimiento(transactionId) {
       try {
@@ -121,6 +130,9 @@ export default {
     },
     cancelarEdicion() {
       this.mostrandoFormularioEdicion = false;
+    },
+    formatDateTime(datetime) {
+      return format(new Date(datetime), 'dd/MM/yyyy HH:mm:ss');
     }
   },
   created() {
@@ -130,5 +142,98 @@ export default {
 </script>
 
 <style scoped>
-/* Estilos específicos del componente de Historial aquí */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #222;
+  border-radius: 8px;
+  box-shadow: 0 0 10px #f0bb0b38;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+table.dark-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dark-table th,
+.dark-table td {
+  padding: 10px;
+  border-bottom: 1px solid #555;
+}
+
+.dark-table th {
+  text-align: left;
+  background-color: #333;
+  color: #fff;
+}
+
+.dark-table tbody tr:hover {
+  background-color: #333;
+}
+
+.edit-button,
+.delete-button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.edit-button {
+  background-color: #f0b90b;
+  color: #222;
+}
+
+.delete-button {
+  background-color: #ff3f4f;
+  color: #fff;
+}
+
+.button-label {
+  margin-left: 5px;
+}
+
+.bi {
+  vertical-align: middle;
+}
+
+.edit-form {
+  padding: 20px;
+  margin-top: 20px;
+  background-color: #333;
+  border-radius: 8px;
+}
+
+.input {
+  width: 100%;
+  padding: 10px;
+  background-color: #555;
+  color: #fff;
+  border: 1px solid #888;
+  border-radius: 5px;
+}
+
+.submit-button,
+.cancel-button {
+  margin-top: 10px;
+}
+
+.submit-button {
+  background-color: #38e260;
+}
+
+.cancel-button {
+  background-color: #ff3f4f;
+}
+
+.dark-form label {
+  color: #fff;
+}
 </style>

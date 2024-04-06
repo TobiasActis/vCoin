@@ -1,16 +1,16 @@
-import {createStore } from 'vuex';
+import { createStore } from 'vuex';
 import criptosModulo from './criptos';
 import operacionesModulo from './operaciones';
 
 export default createStore({
- 
+
   state: {
     username: null,
     loggedIn: false,
   },
-  getters:{
+  getters: {
     getUsername: state => state.username,
-    getLoggedIn: state => state.loggedIn, 
+    getLoggedIn: state => state.loggedIn,
   },
 
   mutations: {
@@ -25,20 +25,20 @@ export default createStore({
   },
 
   actions: {
-    async login({commit},username){
-      try{
-        commit('login',username);
+    async login({ commit }, username) {
+      try {
+        commit('login', username);
       }
-      catch(error){
-        console.error('Error al iniciar sesion:',error)
+      catch (error) {
+        console.error('Error al iniciar sesion:', error)
       }
     },
-    async logout({commit}){
-      try{
+    async logout({ commit }) {
+      try {
         commit('logout');
       }
-      catch(error){
-        console.error('Error al cerrar sesion:',error)
+      catch (error) {
+        console.error('Error al cerrar sesion:', error)
       }
     }
   },
